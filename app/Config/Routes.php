@@ -22,6 +22,8 @@ $routes->post('kategori/simpan', 'Kategori::simpan');
 $routes->get('kategori/hapus/(:num)', 'Kategori::hapus/$1');
 $routes->get('kategori/edit/(:num)', 'Kategori::edit/$1');
 $routes->post('kategori/update', 'Kategori::update');
+$routes->get('riwayat', 'Riwayat::index');
+
 
 
 

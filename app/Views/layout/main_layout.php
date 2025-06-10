@@ -6,33 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Stok</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 </head>
-<style>
-    body {
-        min-height: 100vh;
-    }
 
-    .sidebar {
-        min-height: 100vh;
-        background-color: #343a40;
-        padding-top: 20px;
-    }
+<body class="d-flex flex-column min-vh-100">
 
-    .sidebar a {
-        color: white;
-        display: block;
-        padding: 10px;
-        text-decoration: none;
-    }
-
-    .sidebar a:hover {
-        background-color: #495057;
-    }
-</style>
-
-<body>
     <!-- NAVBAR -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark  sticky-top">
         <div class="container">
             <a class="navbar-brand" href="<?= site_url('/') ?>">Manajemen Stok</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -51,7 +31,7 @@
                         <a class="nav-link" href="<?= site_url('kategori') ?>">Manajemen Kategori</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?= site_url('stok/riwayat') ?>">Riwayat Stok</a>
+                        <a class="nav-link" href="<?= site_url('riwayat') ?>">Riwayat Stok</a>
                     </li>
                 </ul>
             </div>
@@ -59,7 +39,7 @@
     </nav>
 
     <!-- ISI HALAMAN -->
-    <main>
+    <main class="flex-grow-1">
         <?= $this->renderSection('content') ?>
     </main>
 
@@ -71,6 +51,16 @@
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     <?= $this->renderSection('scripts') ?>
+
+    <footer class="text-center text-light bg-dark p-5 mt-auto">
+        <div>
+            <a href="#"><i class="bi bi-instagram h2 p-2 text-light"></i></a>
+            <a href="#"><i class="bi bi-twitter-x h2 p-2 text-light"></i></a>
+            <a href="#"><i class="bi bi-whatsapp h2 p-2 text-light"></i></a>
+        </div>
+        <div>PT. Barang Berkah&copy; 2025</div>
+    </footer>
+
 </body>
 
 </html>

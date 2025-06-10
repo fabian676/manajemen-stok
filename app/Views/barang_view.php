@@ -1,4 +1,5 @@
 <?php use App\Models\ModelKategori; ?>
+<?php $filter_kategori = $filter_kategori ?? ''; ?>
 
 <?= $this->extend('layout/main_layout') ?>
 
@@ -13,12 +14,22 @@
         Data Barang
       </div>
       <div class="card-body">
-        <!-- text pencarian -->
+        <!-- text pencarian & filter -->
         <form action="" method="get">
           <div class="input-group mb-3">
-            <input type="text" class="form-control" value="<?php echo $katakunci ?>" name="katakunci"
-              placeholder="Masukkan kata kunci" aria-label="masukkan kata kunci" aria-describedby="button-addon2">
-            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Cari</button>
+            <input type="text" class="form-control" value="<?= $katakunci ?>" name="katakunci"
+              placeholder="Masukkan kata kunci">
+            <select name="filter_kategori" class="form-select">
+              <option value="">-- Semua Kategori --</option>
+              <?php
+              $modelKategori = new \App\Models\ModelKategori();
+              foreach ($modelKategori->findAll() as $kat):
+                $selected = ($filter_kategori == $kat['kategori']) ? 'selected' : '';
+                ?>
+                <option value="<?= $kat['kategori'] ?>" <?= $selected ?>><?= $kat['kategori'] ?></option>
+              <?php endforeach ?>
+            </select>
+            <button class="btn btn-outline-secondary" type="submit">Cari</button>
           </div>
         </form>
         <!-- Modal -->
@@ -62,7 +73,6 @@
                         <option value="<?= $kat['kategori'] ?>"><?= $kat['kategori'] ?></option>
                       <?php endforeach ?>
                     </select>
-
                   </div>
                 </div>
                 <!-- Form input stok -->
@@ -132,6 +142,7 @@
               </tr>
             <?php } ?>
           </tbody>
+
         </table>
         <?php
         $linkPagination = $pager->links();
@@ -166,7 +177,7 @@
     var url = "<?php echo site_url('barang/edit') ?>/" + $id_barang;
     console.log("Request URL:", url); // Tambahkan ini untuk debugging
     $.ajax({
-      url: "<?php echo site_url("barang/edit/") ?>" + $id_barang,
+      url: url,
       type: "get",
       success: function (hasil) {
         console.log("Response dari server:", hasil); // Tambahkan ini untuk cek hasil AJAX
@@ -180,6 +191,7 @@
           $('#inputStok').val($obj.stok);
           $('#inputHarga').val($obj.harga);
           $('#inputDeskripsi').val($obj.deskripsi);
+          <?= csrf_token() ?>: "<?= csrf_hash() ?>"
         }
       }
     });
@@ -208,6 +220,11 @@
     var $stok = $('#inputStok').val();
     var $harga = $('#inputHarga').val();
     var $deskripsi = $('#inputDeskripsi').val();
+    if (!$barang || !$kategori || !$stok || !$harga) {
+      $('.sukses').hide(); // pastikan hanya pesan error yang tampil
+      $('.error').show().html('Semua field (Barang, Kategori, Stok, Harga) harus diisi.');
+      return; // hentikan proses simpan
+    }
 
     $.ajax({
       url: "<?php echo site_url("barang/simpan") ?>",
@@ -237,5 +254,3 @@
   });
 </script>
 <?= $this->endSection() ?>
-
-</html>

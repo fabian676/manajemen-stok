@@ -16,52 +16,65 @@ class Barang extends BaseController
     {
         $this->model->delete($id_barang);
         return redirect()->to('barang');
+        if ($this->model->find($id_barang)) {
+            $this->model->delete($id_barang);
+        }
     }
     public function edit($id)
     {
-        return json_encode($this->model->find($id));
+        $data = $this->model->find($id);
+        return json_encode($data ?? []);
     }
 
     public function simpan()
     {
+        if (!$this->request->isAJAX()) {
+            return redirect()->to('/barang');
+        }
         $validasi = \Config\Services::validation();
         $aturan = [
             'nama_barang' => [
-                'label' => 'nama barang',
+                'label' => 'Nama Barang',
                 'rules' => 'required|min_length[1]',
                 'errors' => [
-                    'required' => '{field} harus diisi'
+                    'required' => '{field} harus diisi',
+                    'min_length' => '{field} minimal 1 karakter'
                 ]
             ],
             'kategori' => [
-                'label' => 'kategori',
+                'label' => 'Kategori',
                 'rules' => 'required|min_length[1]',
                 'errors' => [
-                    'required' => '{field} harus diisi'
+                    'required' => '{field} harus diisi',
+                    'min_length' => '{field} minimal 1 karakter'
                 ]
             ],
             'stok' => [
                 'label' => 'Stok',
-                'rules' => 'required|min_length[1]',
+                'rules' => 'required|numeric',
                 'errors' => [
-                    'required' => '{field} harus diisi'
+                    'required' => '{field} harus diisi',
+                    'numeric' => '{field} harus berupa angka'
                 ]
             ],
             'harga' => [
                 'label' => 'Harga',
-                'rules' => 'required|min_length[1]',
+                'rules' => 'required|numeric',
                 'errors' => [
-                    'required' => '{field} harus diisi'
+                    'required' => '{field} harus diisi',
+                    'numeric' => '{field} harus berupa angka'
                 ]
             ],
             'deskripsi' => [
                 'label' => 'Deskripsi',
                 'rules' => 'required|min_length[5]',
                 'errors' => [
-                    'required' => '{field} harus diisi'
+                    'required' => '{field} harus diisi',
+                    'min_length' => '{field} minimal 5 karakter'
                 ]
             ],
         ];
+
 
         $validasi->setRules($aturan);
         if ($validasi->withRequest($this->request)->run()) {
@@ -81,9 +94,21 @@ class Barang extends BaseController
                 'deskripsi' => $deskripsi
             ];
             $db = \Config\Database::connect();
-            $query = $db->table('barang')->set($data);
+
             $this->model->save($data);
 
+            // Ambil ID barang yang baru ditambahkan
+            $id_barang_terakhir = $db->insertID();
+
+            // Simpan ke tabel riwayat
+            $modelRiwayat = new \App\Models\ModelRiwayat();
+            $modelRiwayat->insert([
+                'id_barang' => $id_barang_terakhir,
+                'stok_lama' => 0,
+                'stok_baru' => $stok,
+                'aksi' => 'Tambah',
+                'tanggal' => date('Y-m-d H:i:s'),
+            ]);
 
             $hasil['sukses'] = "berhasil memasukkan data";
             $hasil['error'] = false;
@@ -99,16 +124,24 @@ class Barang extends BaseController
     {
         $jumlahBaris = 5;
         $katakunci = $this->request->getGet('katakunci');
+        $filter_kategori = $this->request->getGet('filter_kategori');
+
+        $query = $this->model;
+
         if ($katakunci) {
-            $pencarian = $this->model->cari($katakunci);
-        } else {
-            $pencarian = $this->model;
+            $query = $query->cari($katakunci);
         }
+
+        if ($filter_kategori) {
+            $query = $query->where('kategori', $filter_kategori);
+        }
+
         $data['katakunci'] = $katakunci;
-        $data['dataBarang'] = $pencarian->orderBy('id_barang', 'desc')->paginate($jumlahBaris);
+        $data['filter_kategori'] = $filter_kategori;
+        $data['dataBarang'] = $query->orderBy('id_barang', 'desc')->paginate($jumlahBaris);
         $data['pager'] = $this->model->pager;
+
         return view('barang_view', $data);
     }
-
 
 }

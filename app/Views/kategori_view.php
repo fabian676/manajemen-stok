@@ -10,7 +10,7 @@
             <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#exampleModal">
                 + Tambah Data Kategori
             </button>
-            <!-- Modal Tambah Kategori -->
+            <!-- Modal Tambaah Kategori -->
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                 aria-hidden="true">
                 <div class="modal-dialog">
@@ -74,5 +74,15 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<!-- Tidak perlu JavaScript tambahan karena tombol submit berada di dalam form -->
+<?php if (isset($editData)): ?>
+    <script>
+        // Setelah halaman dimuat, buka modal edit
+        var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+        myModal.show();
+
+        // Ganti judul modal agar sesuai konteks
+        document.getElementById('exampleModalLabel').innerText = "Edit Kategori";
+    <?php endif; ?>
+</script>
+
 <?= $this->endSection() ?>
